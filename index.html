@@ -956,13 +956,25 @@ footer {
     <p class="section-index">01 &nbsp; Selected Work</p>
     <div class="work-header">
       <h2 class="work-title">What I've<br><em>built</em></h2>
-      <span class="work-count">03 projects</span>
+      <span class="work-count">04 projects</span>
     </div>
 
     <div class="work-list reveal-stagger">
 
-      <a href="https://ai-travel-planner-seven-flax.vercel.app" target="_blank" class="work-item">
+      <a href="#experience" class="work-item">
         <span class="work-num">01</span>
+        <div class="work-info">
+          <h3 class="work-name">Retail Sales Intelligence Platform</h3>
+          <p class="work-tagline">Azure Databricks &nbsp;·&nbsp; PySpark &nbsp;·&nbsp; Delta Lake &nbsp;·&nbsp; Unity Catalog &nbsp;·&nbsp; Accenture</p>
+        </div>
+        <div class="work-meta">
+          <p class="work-stack">PySpark / Delta Lake<br>Databricks SQL / AI/BI</p>
+          <span class="work-arrow">↗</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/TarunSunil" target="_blank" class="work-item">
+        <span class="work-num">02</span>
         <div class="work-info">
           <h3 class="work-name">AI Travel Planner</h3>
           <p class="work-tagline">Gemini LLM &nbsp;·&nbsp; Amadeus API &nbsp;·&nbsp; Flask &nbsp;·&nbsp; Vercel</p>
@@ -973,8 +985,8 @@ footer {
         </div>
       </a>
 
-      <a href="https://github.com/TarunSunil/Whisper-Diarization" target="_blank" class="work-item">
-        <span class="work-num">02</span>
+      <a href="https://github.com/TarunSunil" target="_blank" class="work-item">
+        <span class="work-num">03</span>
         <div class="work-info">
           <h3 class="work-name">Whisper Diarization</h3>
           <p class="work-tagline">faster-whisper &nbsp;·&nbsp; NVIDIA NeMo &nbsp;·&nbsp; PyTorch &nbsp;·&nbsp; CTranslate2</p>
@@ -985,8 +997,8 @@ footer {
         </div>
       </a>
 
-      <a href="https://github.com/TarunSunil/E-commerce-management-system" target="_blank" class="work-item">
-        <span class="work-num">03</span>
+      <a href="https://github.com/TarunSunil" target="_blank" class="work-item">
+        <span class="work-num">04</span>
         <div class="work-info">
           <h3 class="work-name">E-Commerce Platform</h3>
           <p class="work-tagline">FastAPI &nbsp;·&nbsp; PostgreSQL &nbsp;·&nbsp; Redis &nbsp;·&nbsp; Docker</p>
@@ -1030,21 +1042,33 @@ footer {
           <span class="chapter-status">Current</span>
         </div>
         <div class="chapter-right">
-          <h3 class="chapter-role">Data Engineering Intern<br>Databricks Track</h3>
+          <h3 class="chapter-role">Data Engineering Intern<br>Azure Databricks Track</h3>
           <p class="chapter-narrative">
-            Embedded within Accenture's enterprise Data Engineering practice, I trained across the full
-            Databricks ecosystem — Delta Live Tables, Unity Catalog, multi-hop architecture, and
-            workflow orchestration — before moving into hands-on pipeline work with <strong>Azure Data
-            Factory</strong> and <strong>Azure Databricks</strong>.
+            After a structured onboarding phase covering the Databricks platform, SQL, Python, and
+            enterprise SDLC practices, I moved into independent project delivery. I designed and built
+            a <strong>Retail Sales Intelligence Platform</strong> — a solo, end-to-end data engineering
+            pipeline on <strong>Azure Databricks</strong> ingesting three heterogeneous sources
+            (offline retail CSV, Shopify-style nested JSON, and daily weather data) through a
+            Medallion Architecture.
           </p>
           <p class="chapter-narrative" style="margin-top:16px;">
-            Alongside the technical track, I earned Accenture's <strong>Agentic AI Ecosystem Tools
-            Level 3A</strong> certification, working with enterprise AI tooling across the modern
-            development lifecycle. The internship has been a deliberate immersion in how large
-            organisations architect data at scale.
+            The pipeline produces <strong>12 governed Delta tables</strong> under Unity Catalog across
+            Bronze, Silver, and Gold layers, with <strong>18 automated data quality checks</strong>
+            across completeness, validity, uniqueness, referential integrity, and reconciliation
+            categories — all returning 100% pass. A <strong>6-tile AI/BI Dashboard</strong> surfaces
+            revenue trends, category performance, customer profiles, and DQ audit results to business
+            stakeholders. I diagnosed and resolved <strong>7 independent errors</strong> — schema
+            violations, namespace collisions, type mismatches, and metadata conflicts — through root
+            cause analysis at each layer. Successfully accelerated the project lifecycle, delivering
+            the end-to-end Sales Intelligence Platform ahead of the projected internal deadline.
+          </p>
+          <p class="chapter-narrative" style="margin-top:16px;">
+            Alongside the project, I earned Accenture's <strong>Agentic AI Ecosystem Tools Level 3A</strong>
+            certification, building conceptual fluency across the modern enterprise AI development lifecycle.
+            Presentation to the Accenture panel is scheduled for <strong>May 10, 2026</strong>.
           </p>
           <div class="chapter-impact">
-            <p class="chapter-impact-text">"Enterprise-grade data engineering requires understanding orchestration, transformation, and governance as three distinct disciplines — not one pipeline."</p>
+            <p class="chapter-impact-text">"18 DQ checks. 100% pass rate. 12 governed Delta tables. Built solo — delivered 2 days ahead of schedule."</p>
           </div>
         </div>
       </div>
@@ -1112,17 +1136,18 @@ footer {
         <p class="tech-cell-label">Data &amp; Storage</p>
         <div class="tech-cell-items">
           <span class="tech-item">PostgreSQL</span>
+          <span class="tech-item">Delta Lake</span>
+          <span class="tech-item">Databricks SQL</span>
           <span class="tech-item">Redis</span>
           <span class="tech-item">SQLite</span>
-          <span class="tech-item">MySQL</span>
         </div>
       </div>
       <div class="tech-cell">
         <p class="tech-cell-label">Cloud &amp; Infra</p>
         <div class="tech-cell-items">
           <span class="tech-item">AWS</span>
-          <span class="tech-item">Azure ADF</span>
-          <span class="tech-item">Databricks</span>
+          <span class="tech-item">Azure Databricks</span>
+          <span class="tech-item">Unity Catalog</span>
           <span class="tech-item">Docker</span>
           <span class="tech-item">CI/CD</span>
         </div>
@@ -1137,19 +1162,19 @@ footer {
         </div>
       </div>
       <div class="tech-cell">
-        <p class="tech-cell-label">Practices</p>
+        <p class="tech-cell-label">Data Engineering</p>
         <div class="tech-cell-items">
-          <span class="tech-item">Git</span>
-          <span class="tech-item">SDLC</span>
-          <span class="tech-item">Agile</span>
-          <span class="tech-item">System Design</span>
-          <span class="tech-item">ETL</span>
+          <span class="tech-item">PySpark</span>
+          <span class="tech-item">Medallion Architecture</span>
+          <span class="tech-item">ETL/ELT</span>
+          <span class="tech-item">DQ Frameworks</span>
+          <span class="tech-item">Data Modelling</span>
         </div>
       </div>
     </div>
 
     <p class="tech-appendix-note">
-      Skills listed reflect demonstrated, interview-defensible proficiency.<br>
+      Skills listed reflect demonstrated, interview-defensible proficiency — verified against production use.<br>
       Certifications: Agentic AI Ecosystem Tools L3A &nbsp;·&nbsp; AWS Cloud App Dev (Primer) &nbsp;·&nbsp; NPTEL ML &amp; DBMS (IIT Kharagpur)
     </p>
   </div>
