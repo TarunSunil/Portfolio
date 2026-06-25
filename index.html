@@ -51,8 +51,103 @@ TOKENS
 }
 
 /* ─────────────────────────────────────
-RESET & BASE
+MODERN CSS — 2025/26 FEATURES
 ───────────────────────────────────── */
+
+/* Animatable CSS custom property for gradient shimmer */
+@property --shimmer-pos {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: -30%;
+}
+
+/* @starting-style: entrance animations without JS for supported browsers */
+@supports (animation-timeline: scroll()) {
+  /* Scroll-driven reading progress (CSS-only fallback augment) */
+  #reading-progress {
+    animation: reading-fill linear both;
+    animation-timeline: scroll(root block);
+  }
+  @keyframes reading-fill {
+    from { width: 0%; }
+    to   { width: 100%; }
+  }
+}
+
+/* text-wrap: balance on all headings for better rag */
+h1, h2, h3 { text-wrap: balance; }
+
+/* CSS nesting: work badge */
+.work-item--featured {
+  position: relative;
+  border-left: 1px solid color-mix(in oklch, var(--accent) 40%, transparent);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--accent) 4%, transparent),
+      transparent 60%
+    );
+    pointer-events: none;
+    border-radius: inherit;
+  }
+}
+
+.work-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  border: 1px solid color-mix(in oklch, var(--accent2) 35%, transparent);
+  background: color-mix(in oklch, var(--accent2) 7%, transparent);
+  padding: 2px 8px;
+  border-radius: 20px;
+  vertical-align: middle;
+  margin-left: 10px;
+  animation: badge-pulse 3s ease-in-out infinite;
+}
+.work-badge::before {
+  content: '●';
+  font-size: 7px;
+  opacity: 0.8;
+  animation: dot-blink 1.8s ease-in-out infinite;
+}
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--accent2) 0%, transparent); }
+  50%       { box-shadow: 0 0 0 4px color-mix(in oklch, var(--accent2) 10%, transparent); }
+}
+@keyframes dot-blink {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 1; }
+}
+
+/* Improved :focus-visible — keyboard nav highlight */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+/* color-mix() hover tint on nav links */
+.nav-links a:hover {
+  color: color-mix(in oklch, var(--accent) 80%, var(--text-hi));
+}
+
+/* @starting-style for toast fade-in */
+@supports (animation-timeline: scroll()) {
+  .toast {
+    @starting-style { opacity: 0; transform: translateY(8px); }
+  }
+}
+
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; font-size: 16px; }
 
@@ -401,27 +496,111 @@ pointer-events: none;
 overflow: hidden;
 z-index: 0;
 }
-.orb {
-position: absolute;
-border-radius: 50%;
-filter: blur(120px);
-opacity: 0.07;
-transition: transform 2s cubic-bezier(0.16,1,0.3,1);
+
+/* ── SHADER CANVAS ── */
+#shader-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
-.orb-1 {
-width: 600px;
-height: 600px;
-background: radial-gradient(circle, #c8b89a, transparent);
-top: -100px;
-left: -120px;
+
+/* ── GLITCH on hero name ── */
+@keyframes glitch-clip-1 {
+  0%,100%  { clip-path: inset(40% 0 61% 0); transform: translate(-2px,0); }
+  20%      { clip-path: inset(92% 0 1% 0);  transform: translate(2px,0);  }
+  40%      { clip-path: inset(43% 0 20% 0); transform: translate(-2px,0); }
+  60%      { clip-path: inset(25% 0 58% 0); transform: translate(2px,0);  }
+  80%      { clip-path: inset(54% 0 7% 0);  transform: translate(-2px,0); }
 }
-.orb-2 {
-width: 500px;
-height: 500px;
-background: radial-gradient(circle, #30d158, transparent);
-bottom: -80px;
-right: -80px;
+@keyframes glitch-clip-2 {
+  0%,100%  { clip-path: inset(25% 0 58% 0); transform: translate(2px,0);  }
+  20%      { clip-path: inset(54% 0 7% 0);  transform: translate(-2px,0); }
+  40%      { clip-path: inset(92% 0 1% 0);  transform: translate(2px,0);  }
+  60%      { clip-path: inset(40% 0 61% 0); transform: translate(-2px,0); }
+  80%      { clip-path: inset(43% 0 20% 0); transform: translate(2px,0);  }
 }
+.hero-name-display { position: relative; }
+.hero-name-display.glitching::before,
+.hero-name-display.glitching::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+}
+.hero-name-display.glitching::before {
+  color: #ff4444;
+  animation: glitch-clip-1 0.3s steps(1) forwards;
+}
+.hero-name-display.glitching::after {
+  color: #4444ff;
+  animation: glitch-clip-2 0.3s steps(1) forwards;
+}
+
+/* ── SPOTLIGHT on work cards ── */
+.work-item { position: relative; overflow: hidden; }
+.work-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(circle 140px at var(--sx,50%) var(--sy,50%),
+    rgba(200,184,154,0.13), transparent 70%);
+}
+.work-item:hover .work-spotlight { opacity: 1; }
+
+/* ── TILT on work cards ── */
+.work-item { transform-style: preserve-3d; transition: box-shadow 0.2s ease; }
+.work-item:hover { box-shadow: 0 8px 40px rgba(0,0,0,0.4); }
+
+
+
+
+
+
+
+/* ── STAT COUNTER strip ── */
+.stat-strip {
+  display: flex;
+  gap: 0;
+  margin: 56px 0 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.stat-item {
+  flex: 1;
+  padding: 28px 0;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.stat-item:last-child { border-right: none; }
+.stat-item.vis { opacity: 1; transform: none; }
+.stat-item:nth-child(2) { transition-delay: 0.12s; }
+.stat-item:nth-child(3) { transition-delay: 0.24s; }
+.stat-item:nth-child(4) { transition-delay: 0.36s; }
+.stat-val {
+  font-family: var(--mono);
+  font-size: clamp(26px, 3.5vw, 40px);
+  font-weight: 500;
+  color: var(--text-hi);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.stat-val sup { font-size: 0.45em; vertical-align: super; color: var(--accent); }
+.stat-unit { font-size: 10px; color: var(--text-dim); letter-spacing: 0.12em; margin-top: 7px; text-transform: uppercase; }
+@media (max-width: 600px) { .stat-strip { flex-wrap: wrap; } .stat-item { flex: 1 1 50%; } }
+
+
 
 .hero-photo-frame::after {
 content: "";
@@ -1257,15 +1436,14 @@ HERO
 ═══════════════════════════ -->
 <section class="wrap" id="hero">
 <div class="hero-bg" aria-hidden="true">
-<span class="orb orb-1"></span>
-<span class="orb orb-2"></span>
+<canvas id="shader-canvas"></canvas>
 </div>
 <div class="hero-left">
 <p class="hero-greeting">Chennai, India &nbsp;·&nbsp; Available for full-time</p>
 <h1 class="hero-name-display" data-final-text="Tarun Sunil" data-final-html="Tarun<br><em>Sunil</em>">Tarun<br><em>Sunil</em></h1>
 <p class="hero-descriptor">
-Computer Science graduate &amp; former Data Engineering Intern at Accenture.<br>
-Building systems that process, serve, and scale.
+Computer Science graduate &amp; AI Systems Builder.<br>
+Former Data Engineering Intern at Accenture. Currently building <em>LumenForge</em> — a C++/Qt6 photo editor.
 </p>
 </div>
 
@@ -1277,7 +1455,7 @@ Building systems that process, serve, and scale.
 <div class="hero-meta">
 <p class="hero-meta-line">B.Tech CSE</p>
 <p class="hero-meta-line">SRM IST Ramapuram</p>
-<p class="hero-meta-line">CGPA 9.17 / 10</p>
+<p class="hero-meta-line">CGPA 9.14 / 10</p>
 </div>
 </div>
 
@@ -1316,9 +1494,9 @@ ABOUT
 <div class="about-right reveal">
 <p class="about-location">Chennai, India &nbsp;&nbsp; Open to full-time &amp; relocation</p>
 <div class="about-bio">
-<p>I'm a B.Tech Computer Science graduate from <strong>SRM Institute of Science and Technology</strong>, class of May 2026, CGPA 9.17/10. I write software that sits at the intersection of backend infrastructure and data — the kind of code that moves, transforms, and surfaces information reliably at scale.</p>
-<p>From December 2025 to May 2026, I was a <strong>Data Engineering Intern at Accenture</strong>, embedded in their enterprise Databricks track. Before that, I worked on <strong>HealthPilot</strong>, a production healthcare platform at Botcode Technologies, where I reduced API response latency by 30% through query optimization and caching architecture.</p>
-<p>Outside of work, I build systems that push at what I find interesting — an AI memory OS with RAG pipelines and knowledge graph search, an offline-first fitness PWA with a two-stage Gemini meal analysis pipeline, a full-stack commerce platform, and an AI travel planner backed by live flight data. I'm drawn to problems where clean engineering has a measurable outcome.</p>
+<p>I'm a B.Tech Computer Science graduate from <strong>SRM Institute of Science and Technology</strong>, class of May 2026, CGPA 9.14/10. I build software at the intersection of backend infrastructure, data engineering, and AI — the kind of code that moves, transforms, and surfaces information reliably at scale.</p>
+<p>From December 2025 to May 2026, I was a <strong>Data Engineering Intern at Accenture</strong>, embedded in their enterprise Databricks track — where I designed a solo, end-to-end Retail Sales Intelligence Platform on Azure Databricks and earned the <strong>Agentic AI Ecosystem Tools L3A</strong> certification. Before that, I worked on <strong>HealthPilot</strong>, a production healthcare platform at Botcode Technologies, reducing API response latency by 30%.</p>
+<p>Outside of work, I build things that push at what I find interesting — <strong>LumenForge</strong>, a C++/Qt6 desktop photo editor with an ONNX Runtime AI inference pipeline; <strong>FYI</strong>, an AI memory OS with hand-rolled RAG, a tool-calling agent loop, and nightly consolidation cron; a two-stage Gemini fitness PWA; and an AI travel planner backed by live flight data. I'm drawn to problems where clean engineering has a measurable outcome.</p>
 </div>
 </div>
 
@@ -1326,21 +1504,68 @@ ABOUT
 </div>
 </section>
 
-<!-- ═══════════════════════════
-WORK
-═══════════════════════════ -->
+<!-- ─── STAT STRIP ─── -->
+<section class="section" style="padding-top:0; padding-bottom:0">
+<div class="wrap">
+<div class="stat-strip reveal">
+  <div class="stat-item">
+    <div class="stat-val"><span class="stat-count" data-target="914" data-decimal="2">0.00</span></div>
+    <div class="stat-unit">CGPA</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val"><span class="stat-count" data-target="18">0</span></div>
+    <div class="stat-unit">DQ checks passed</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val"><span class="stat-count" data-target="30">0</span><sup>%</sup></div>
+    <div class="stat-unit">API latency cut</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val"><span class="stat-count" data-target="6">0</span></div>
+    <div class="stat-unit">Projects shipped</div>
+  </div>
+</div>
+</div>
+</section>
 <section class="section" id="work">
 <div class="wrap">
 <p class="section-index">01 &nbsp; Selected Work</p>
 <div class="work-header">
 <h2 class="work-title">What I've<br><em>built</em></h2>
-<span class="work-count">05 projects</span>
+<span class="work-count">06 projects</span>
 </div>
 
 <div class="work-list reveal-stagger">
 
-<a href="#experience" class="work-item" aria-label="View Accenture experience details">
+<a href="https://github.com/TarunSunil" target="_blank" class="work-item work-item--featured" aria-label="View LumenForge on GitHub">
+<div class="work-spotlight"></div>
 <span class="work-num">01</span>
+<div class="work-info">
+<h3 class="work-name">LumenForge <span class="work-badge">Now Building</span></h3>
+<p class="work-tagline">C++ &nbsp;·&nbsp; Qt6 &nbsp;·&nbsp; ONNX Runtime &nbsp;·&nbsp; LibRaw &nbsp;·&nbsp; OpenCV &nbsp;·&nbsp; CMake</p>
+</div>
+<div class="work-meta">
+<p class="work-stack">C++17 / Qt6<br>ONNX / LibRaw</p>
+<span class="work-arrow">↗</span>
+</div>
+</a>
+
+<a href="https://le-mem-inky.vercel.app/" target="_blank" class="work-item" data-preview="assets/previews/FYI.webp" aria-label="View Personal Memory OS project">
+<div class="work-spotlight"></div>
+<span class="work-num">02</span>
+<div class="work-info">
+<h3 class="work-name">FYI — Personal Memory OS</h3>
+<p class="work-tagline">Next.js &nbsp;·&nbsp; pgvector &nbsp;·&nbsp; RAG Pipeline &nbsp;·&nbsp; Gemini API &nbsp;·&nbsp; Supabase &nbsp;·&nbsp; Prisma</p>
+</div>
+<div class="work-meta">
+<p class="work-stack">TypeScript / Next.js<br>PostgreSQL / Prisma</p>
+<span class="work-arrow">↗</span>
+</div>
+</a>
+
+<a href="#experience" class="work-item" aria-label="View Accenture experience details">
+<div class="work-spotlight"></div>
+<span class="work-num">03</span>
 <div class="work-info">
 <h3 class="work-name">Retail Sales Intelligence Platform</h3>
 <p class="work-tagline">Azure Databricks &nbsp;·&nbsp; PySpark &nbsp;·&nbsp; Delta Lake &nbsp;·&nbsp; Unity Catalog &nbsp;·&nbsp; Accenture</p>
@@ -1352,7 +1577,8 @@ WORK
 </a>
 
 <a href="https://ai-travel-planner-seven-flax.vercel.app/" target="_blank" class="work-item" data-preview="assets/previews/AI-Travel-Planner.webp" aria-label="View AI Travel Planner project">
-<span class="work-num">02</span>
+<div class="work-spotlight"></div>
+<span class="work-num">04</span>
 <div class="work-info">
 <h3 class="work-name">AI Travel Planner</h3>
 <p class="work-tagline">Gemini LLM &nbsp;·&nbsp; Amadeus API &nbsp;·&nbsp; Flask &nbsp;·&nbsp; Vercel</p>
@@ -1363,31 +1589,8 @@ WORK
 </div>
 </a>
 
-<a href="https://le-mem-inky.vercel.app/" target="_blank" class="work-item" data-preview="assets/previews/FYI.webp" aria-label="View Personal Memory OS project">
-<span class="work-num">03</span>
-<div class="work-info">
-<h3 class="work-name">FYI — Personal Memory OS</h3>
-<p class="work-tagline">Next.js &nbsp;·&nbsp; pgvector &nbsp;·&nbsp; RAG Pipeline &nbsp;·&nbsp; Gemini API &nbsp;·&nbsp; Prisma</p>
-</div>
-<div class="work-meta">
-<p class="work-stack">TypeScript / Next.js<br>PostgreSQL / Prisma</p>
-<span class="work-arrow">↗</span>
-</div>
-</a>
-
-<a href="https://github.com/TarunSunil/e-commerce-python" target="_blank" class="work-item" aria-label="View E-commerce Platform project on GitHub">
-<span class="work-num">04</span>
-<div class="work-info">
-<h3 class="work-name">E-Commerce Platform</h3>
-<p class="work-tagline">FastAPI &nbsp;·&nbsp; PostgreSQL &nbsp;·&nbsp; Redis &nbsp;·&nbsp; Docker</p>
-</div>
-<div class="work-meta">
-<p class="work-stack">Python / FastAPI<br>PostgreSQL / Redis</p>
-<span class="work-arrow">↗</span>
-</div>
-</a>
-
-<a href="https://fit-life-indol.vercel.app/" target="_blank" class="work-item" data-preview="assets/previews/FitLife.webp">
+<a href="https://fit-life-indol.vercel.app/" target="_blank" class="work-item" data-preview="assets/previews/FitLife.webp" aria-label="View FitLife Fitness PWA">
+<div class="work-spotlight"></div>
 <span class="work-num">05</span>
 <div class="work-info">
 <h3 class="work-name">Obsidian Fitness PWA</h3>
@@ -1395,6 +1598,19 @@ WORK
 </div>
 <div class="work-meta">
 <p class="work-stack">TypeScript / React 19<br>Tailwind / PWA</p>
+<span class="work-arrow">↗</span>
+</div>
+</a>
+
+<a href="https://github.com/TarunSunil/e-commerce-python" target="_blank" class="work-item" aria-label="View E-commerce Platform project on GitHub">
+<div class="work-spotlight"></div>
+<span class="work-num">06</span>
+<div class="work-info">
+<h3 class="work-name">E-Commerce Platform</h3>
+<p class="work-tagline">FastAPI &nbsp;·&nbsp; PostgreSQL &nbsp;·&nbsp; Redis &nbsp;·&nbsp; Docker</p>
+</div>
+<div class="work-meta">
+<p class="work-stack">Python / FastAPI<br>PostgreSQL / Redis</p>
 <span class="work-arrow">↗</span>
 </div>
 </a>
@@ -1524,6 +1740,7 @@ TECHNICAL APPENDIX
 
     <p class="section-index">03 &nbsp; Technical Appendix</p>
 
+
     <div class="bento-grid reveal-stagger">
 
       <!-- Languages -->
@@ -1531,7 +1748,7 @@ TECHNICAL APPENDIX
         <div>
           <p class="bento-label">Languages</p>
           <h3 class="bento-title">
-            Python, SQL, TypeScript, JavaScript
+            Python, SQL, TypeScript, JavaScript, C++
           </h3>
         </div>
         <div class="skill-bar-track">
@@ -1544,7 +1761,7 @@ TECHNICAL APPENDIX
         <div>
           <p class="bento-label">AI / ML</p>
           <h3 class="bento-title">
-            RAG, Gemini, Whisper
+            RAG, Gemini, ONNX, Whisper
           </h3>
         </div>
         <div class="skill-bar-track">
@@ -1555,9 +1772,9 @@ TECHNICAL APPENDIX
       <!-- Cloud -->
       <div class="bento-cell">
         <div>
-          <p class="bento-label">Cloud</p>
+          <p class="bento-label">Cloud & DevOps</p>
           <h3 class="bento-title">
-            Azure, AWS, Docker
+            Azure, AWS, Docker, Vercel
           </h3>
         </div>
         <div class="skill-bar-track">
@@ -1570,7 +1787,7 @@ TECHNICAL APPENDIX
         <div>
           <p class="bento-label">Data Engineering</p>
           <h3 class="bento-title">
-            PySpark, Delta Lake, Databricks SQL
+            PySpark, Delta Lake, Databricks SQL, Unity Catalog
           </h3>
         </div>
         <div class="skill-bar-track">
@@ -1583,7 +1800,7 @@ TECHNICAL APPENDIX
         <div>
           <p class="bento-label">Frameworks</p>
           <h3 class="bento-title">
-            Flask, FastAPI, Next.js
+            Flask, FastAPI, Next.js, Qt6
           </h3>
         </div>
         <div class="skill-bar-track">
@@ -1591,23 +1808,36 @@ TECHNICAL APPENDIX
         </div>
       </div>
 
-      <!-- Storage -->
-<div class="bento-cell wide">
-  <div>
-    <p class="bento-label">Storage</p>
-    <h3 class="bento-title">
-      PostgreSQL, Redis, MySQL, SQLite
-    </h3>
-  </div>
+      <!-- Systems / Native -->
+      <div class="bento-cell">
+        <div>
+          <p class="bento-label">Systems / Native</p>
+          <h3 class="bento-title">
+            CMake, vcpkg, LibRaw, OpenCV
+          </h3>
+        </div>
+        <div class="skill-bar-track">
+          <div class="skill-bar-fill" style="--pct:78%"></div>
+        </div>
+      </div>
 
-  <div class="skill-bar-track">
-    <div class="skill-bar-fill" style="--pct:86%"></div>
-  </div>
-</div>
+      <!-- Storage -->
+      <div class="bento-cell">
+        <div>
+          <p class="bento-label">Storage</p>
+          <h3 class="bento-title">
+            PostgreSQL, Redis, MySQL, SQLite, Supabase
+          </h3>
+        </div>
+        <div class="skill-bar-track">
+          <div class="skill-bar-fill" style="--pct:86%"></div>
+        </div>
+      </div>
 
     </div>
-      Certifications: Agentic AI Ecosystem Tools L3A · AWS Cloud App Dev (Primer)
-      · NPTEL ML &amp; DBMS (IIT Kharagpur)
+    <p class="bento-label" style="margin-top:28px; font-size:11px; letter-spacing:0.08em; color:var(--text-dim);">
+      Certifications: Agentic AI Ecosystem Tools L3A &nbsp;·&nbsp; AWS Cloud App Dev (Primer)
+      &nbsp;·&nbsp; NPTEL ML &amp; DBMS (IIT Kharagpur)
     </p>
 
   </div>
@@ -1626,7 +1856,9 @@ CONTACT
 Open to full-time roles, new grad positions, and interesting engineering conversations.
 Based in Chennai — available to relocate.
 </p>
-<a href="mailto:tarunsunil73@gmail.com" class="contact-email" aria-label="Copy email address">tarunsunil73@gmail.com</a>
+<div class="contact-email-wrap" id="mag-wrap">
+<a href="mailto:tarunsunil73@gmail.com" class="contact-email" id="contact-email-el" aria-label="Copy email address">tarunsunil73@gmail.com</a>
+</div>
 </div>
 <div class="contact-right">
 <ul class="contact-links-list">
@@ -1645,7 +1877,21 @@ Based in Chennai — available to relocate.
 </footer>
 
 <script>
-/* ── CURSOR + FOLLOWER ── */
+/* ── VIEW TRANSITIONS API — smooth section nav for supported browsers ── */
+if ('startViewTransition' in document) {
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (!target) return;
+      e.preventDefault();
+      document.startViewTransition(() => {
+        target.scrollIntoView({ behavior: 'instant', block: 'start' });
+      });
+    });
+  });
+}
+
+
 const cursor = document.getElementById('cursor');
 const follower = document.getElementById('cursor-follower');
 let mouseX = window.innerWidth / 2;
@@ -1856,44 +2102,224 @@ preview.classList.remove('active');
 });
 });
 
-/* ── PARALLAX + ORBS ── */
+/* ── PARALLAX ── */
 function updateHeroParallax() {
 const photo = document.querySelector('.hero-photo-frame');
 if (photo && window.scrollY < window.innerHeight) {
 photo.style.transform = `translateY(${window.scrollY * 0.15}px)`;
 }
 }
-document.addEventListener('mousemove', e => {
-const x = (e.clientX / window.innerWidth - 0.5) * 30;
-const y = (e.clientY / window.innerHeight - 0.5) * 30;
-const orb1 = document.querySelector('.orb-1');
-const orb2 = document.querySelector('.orb-2');
-if (orb1) orb1.style.transform = `translate(${x}px, ${y}px)`;
-if (orb2) orb2.style.transform = `translate(${-x}px, ${-y}px)`;
-});
+
+/* ── WEBGL SHADER HERO BACKGROUND ── */
+(function() {
+const canvas = document.getElementById('shader-canvas');
+if (!canvas) return;
+const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+if (!gl) return;
+
+const VS = `
+attribute vec2 a_pos;
+void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+`;
+const FS = `
+precision mediump float;
+uniform float u_time;
+uniform vec2  u_res;
+
+float hash(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+}
+float noise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  float a = hash(i), b = hash(i + vec2(1,0));
+  float c = hash(i + vec2(0,1)), d = hash(i + vec2(1,1));
+  return mix(mix(a,b,u.x), mix(c,d,u.x), u.y);
+}
+float fbm(vec2 p) {
+  float v = 0.0, a = 0.5;
+  for (int i = 0; i < 5; i++) {
+    v += a * noise(p);
+    p = p * 2.1 + vec2(1.7, 9.2);
+    a *= 0.5;
+  }
+  return v;
+}
+void main() {
+  vec2 uv = (gl_FragCoord.xy - 0.5 * u_res) / u_res.y;
+  float t = u_time * 0.18;
+  vec2 q = vec2(fbm(uv + vec2(0.0, 0.0)), fbm(uv + vec2(5.2, 1.3)));
+  vec2 r = vec2(fbm(uv + 4.0*q + vec2(1.7, 9.2) + 0.15*t),
+                fbm(uv + 4.0*q + vec2(8.3, 2.8) + 0.126*t));
+  float f = fbm(uv + 4.0 * r);
+
+  vec3 sand  = vec3(0.784, 0.722, 0.604); /* #c8b89a */
+  vec3 green = vec3(0.188, 0.820, 0.345); /* #30d158 */
+  vec3 black = vec3(0.031, 0.031, 0.031); /* #080808 */
+
+  vec3 col = mix(black, mix(sand * 0.5, green * 0.4, clamp(f * 2.0 - 0.5, 0.0, 1.0)), f * 0.12);
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+function compile(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog);
+gl.useProgram(prog);
+
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+const aPos = gl.getAttribLocation(prog, 'a_pos');
+gl.enableVertexAttribArray(aPos);
+gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+const uTime = gl.getUniformLocation(prog, 'u_time');
+const uRes  = gl.getUniformLocation(prog, 'u_res');
+
+function resize() {
+  canvas.width  = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+}
+resize();
+window.addEventListener('resize', resize, {passive:true});
+
+let start = null;
+function render(ts) {
+  if (!start) start = ts;
+  gl.uniform1f(uTime, (ts - start) * 0.001);
+  gl.uniform2f(uRes, canvas.width, canvas.height);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+})();
+
 
 /* ── COPY EMAIL TO CLIPBOARD ── */
-const emailEl = document.querySelector('.contact-email');
+const emailEl = document.getElementById('contact-email-el') || document.querySelector('.contact-email');
 function showToast(msg) {
 const toast = document.createElement('div');
 toast.className = 'toast';
 toast.textContent = msg;
 document.body.appendChild(toast);
 setTimeout(() => toast.classList.add('show'), 10);
-setTimeout(() => {
-toast.classList.remove('show');
-setTimeout(() => toast.remove(), 400);
-}, 2400);
+setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 2400);
 }
 emailEl?.addEventListener('click', async e => {
 e.preventDefault();
 try {
 await navigator.clipboard.writeText('tarunsunil73@gmail.com');
 showToast('Email copied to clipboard');
-} catch {
-window.location.href = 'mailto:tarunsunil73@gmail.com';
+} catch { window.location.href = 'mailto:tarunsunil73@gmail.com'; }
+});
+
+/* ── MAGNETIC EMAIL BUTTON ── */
+(function() {
+const wrap = document.getElementById('mag-wrap');
+const btn  = document.getElementById('contact-email-el');
+if (!wrap || !btn) return;
+const RADIUS = 90, STRENGTH = 14;
+wrap.addEventListener('mousemove', e => {
+const r = btn.getBoundingClientRect();
+const cx = r.left + r.width / 2;
+const cy = r.top  + r.height / 2;
+const dx = e.clientX - cx;
+const dy = e.clientY - cy;
+const dist = Math.sqrt(dx * dx + dy * dy);
+if (dist < RADIUS) {
+const pull = (1 - dist / RADIUS) * STRENGTH;
+btn.style.transform = `translate(${(dx / dist) * pull}px, ${(dy / dist) * pull}px)`;
+btn.style.transition = 'transform 0.1s ease';
+} else {
+btn.style.transform = '';
+btn.style.transition = 'transform 0.35s ease';
 }
 });
+wrap.addEventListener('mouseleave', () => {
+btn.style.transform = '';
+btn.style.transition = 'transform 0.35s ease';
+});
+})();
+
+/* ── SPOTLIGHT + TILT on work cards ── */
+(function() {
+document.querySelectorAll('.work-item').forEach(card => {
+const spot = card.querySelector('.work-spotlight');
+card.addEventListener('mousemove', e => {
+const r = card.getBoundingClientRect();
+const x = ((e.clientX - r.left) / r.width)  * 100;
+const y = ((e.clientY - r.top)  / r.height) * 100;
+if (spot) {
+spot.style.setProperty('--sx', x + '%');
+spot.style.setProperty('--sy', y + '%');
+}
+const rx = ((e.clientY - r.top)  / r.height - 0.5) * -7;
+const ry = ((e.clientX - r.left) / r.width  - 0.5) *  7;
+card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(4px)`;
+card.style.transition = 'transform 0.1s ease, box-shadow 0.2s ease';
+});
+card.addEventListener('mouseleave', () => {
+card.style.transform = '';
+card.style.transition = 'transform 0.4s ease, box-shadow 0.3s ease';
+});
+});
+})();
+
+/* ── RGB GLITCH on hero name ── */
+(function() {
+const el = document.querySelector('.hero-name-display');
+if (!el) return;
+function doGlitch() {
+el.setAttribute('data-text', el.innerText);
+el.classList.add('glitching');
+setTimeout(() => el.classList.remove('glitching'), 320);
+}
+function scheduleGlitch() {
+const delay = 3500 + Math.random() * 5000;
+setTimeout(() => { doGlitch(); scheduleGlitch(); }, delay);
+}
+window.addEventListener('load', () => setTimeout(scheduleGlitch, 2200));
+})();
+
+/* ── STAT COUNTERS (scroll-triggered) ── */
+(function() {
+document.querySelectorAll('.stat-count').forEach(el => {
+const target = Number(el.dataset.target);
+const isDecimal = !!el.dataset.decimal;
+const decimals  = Number(el.dataset.decimal || 0);
+const strip = el.closest('.stat-strip');
+const io = new IntersectionObserver(entries => {
+if (entries[0].isIntersecting) {
+io.disconnect();
+if (strip) strip.querySelectorAll('.stat-item').forEach(s => s.classList.add('vis'));
+const start = performance.now();
+const dur = 1600;
+function tick(now) {
+const t = Math.min((now - start) / dur, 1);
+const ease = 1 - Math.pow(1 - t, 3);
+if (isDecimal) {
+const raw = (target / Math.pow(10, decimals)) * ease;
+el.textContent = raw.toFixed(decimals);
+} else {
+el.textContent = Math.round(target * ease);
+}
+if (t < 1) requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+}
+}, { threshold: 0.5 });
+io.observe(el);
+});
+})();
+
 
 /* ── EXPERIENCE TIMELINE ── */
 const timelineNodes = document.querySelectorAll('.timeline-node');
